@@ -1,16 +1,10 @@
+import heapq
+import sys
+
+
 class Graphs:
     def __init__(self, directed = False):
         self.directed = directed
-
-        """
-        graph = {
-        A
-        
-        
-        }
-        
-        
-        """
         self.adj_list = dict()
 
     def __repr__(self):
@@ -86,6 +80,37 @@ class Graphs:
     def obtain_neighbours(self, node):
         return self.adj_list.get(node, set())
 
+
+#DIJKSTRA'S ALGORITHM
+    def dijkstra(self, start_node):
+        # Priority queue: (distance, node)
+        heap = [(0, start_node)]
+        distances = {node: float('inf') for node in self.adj_list}
+        distances[start_node] = 0
+        visited = set()
+
+        while heap:
+            current_dist, current_node = heapq.heappop(heap)
+
+            if current_node in visited:
+                continue
+            visited.add(current_node)
+
+            for neighbour in self.adj_list[current_node]:
+                # If graph is unweighted (no tuples), skip Dijkstra
+                if not isinstance(neighbour, tuple):
+                    continue
+
+                neighbour_node, weight = neighbour
+                new_dist = current_dist + weight
+
+                if new_dist < distances[neighbour_node]:
+                    distances[neighbour_node] = new_dist
+                    heapq.heappush(heap, (new_dist, neighbour_node))
+
+        return distances
+
+
 if __name__ == "__main__":
     graph_obj = Graphs(directed = True)
 
@@ -102,3 +127,4 @@ if __name__ == "__main__":
 
     print("DEPTH FIRST SEARCH: \n")
     print(graph_obj.dfs("A"))
+
